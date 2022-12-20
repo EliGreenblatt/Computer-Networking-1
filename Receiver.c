@@ -125,11 +125,11 @@ int main()
         // we get current starting time
         gettimeofday(&firstHalfStartTime, NULL);
 
+
         while (bufRend > 0)
         {
-            // in amount we hold the amount of bytes received and we check for success
+            //in amount we hold the amount of bytes received and we check for success
             int amount = recv(clientS , BUF , sizeof(BUF) , 0);
-            printf("this is amount %d\n" , amount);
             if (amount > 0)
             {
                 printf("Received %d bytes\n" , amount);
@@ -146,11 +146,11 @@ int main()
             }
             bufRend = bufRend - amount;
 
-            printf("This is amount left: %d\n" , bufRend);
         }
 
-        // we get current ending time
+        //we get current ending time
         gettimeofday(&firstHalfEndTime , NULL);
+
 
         // in the array we store the time it took to receive the first half
         timeFirstHalf[timesFileReceived] = firstHalfEndTime.tv_usec - firstHalfStartTime.tv_usec;
@@ -301,6 +301,5 @@ int main()
     // we close both sockets and end the program
     close(sock);
     close(clientS); 
-    
     return 0;
 }
