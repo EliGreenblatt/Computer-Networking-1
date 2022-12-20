@@ -115,7 +115,7 @@ int main()
     float timeFirstHalf[8] = {0};
     float timeSecondHalf[8] = {0};
     int timesFileReceived = 0;
-    struct timeval firstHalfStartTime, firstHalfEndTime , secondHalfStartTime , secondHalfEndTime;
+    struct timespec begin , end;
     while(1)
     {
         // the file size of the chosen file , we decrease it by the amount of bytes
@@ -123,11 +123,11 @@ int main()
         int bufRend = 504087;
 
         // we get current starting time
-        gettimeofday(&firstHalfStartTime, NULL);
-
+        clock_gettime(CLOCK_REALTIME, &begin);
 
         while (bufRend > 0)
         {
+
             //in amount we hold the amount of bytes received and we check for success
             int amount = recv(clientS , BUF , sizeof(BUF) , 0);
             if (amount > 0)
@@ -149,11 +149,10 @@ int main()
         }
 
         //we get current ending time
-        gettimeofday(&firstHalfEndTime , NULL);
-
-
-        // in the array we store the time it took to receive the first half
-        timeFirstHalf[timesFileReceived] = firstHalfEndTime.tv_usec - firstHalfStartTime.tv_usec;
+        clock_gettime(CLOCK_REALTIME, &end);
+        long seconds = end.tv_sec - begin.tv_sec;
+        long nanoseconds = end.tv_nsec - begin.tv_nsec;
+        timeFirstHalf[timesFileReceived] = seconds + (nanoseconds * 0.000000001);
 
         // we send back authentication that we received the message and check for success
         char xor [16] = {0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0};
@@ -186,10 +185,10 @@ int main()
         bufRend = 504088;
 
         // we get current starting time of the second half of the message
-        gettimeofday(&secondHalfStartTime,NULL);
+        clock_gettime(CLOCK_REALTIME , &begin);
 
         while (bufRend > 0)
-        {
+        {   
             // in amount we hold the amount of bytes received and we check for success
             int amount = recv(clientS , BUF , sizeof(BUF) , 0);
             printf("this is amount %d of second half\n" , amount);
@@ -209,15 +208,15 @@ int main()
             }
             bufRend = bufRend - amount;
 
-            printf("This is amount left: %d of second half\n" , bufRend);
+            //printf("This is amount left: %d of second half\n" , bufRend);
 
         }
         
         // we get current ending time of the second half of the message
-        gettimeofday(&secondHalfEndTime,NULL);
-
-        // in the array we store the time it took to receive the second half
-        timeSecondHalf[timesFileReceived] = secondHalfEndTime.tv_usec - secondHalfStartTime.tv_usec;
+        clock_gettime(CLOCK_REALTIME , &end);
+        seconds = end.tv_sec - begin.tv_sec;
+        nanoseconds = end.tv_nsec - begin.tv_nsec;
+        timeSecondHalf[timesFileReceived] = seconds + (nanoseconds * 0.000000001);
 
         // we send authentication back to the client ,  check for success
         checkSend = send(clientS, xor, xorlen, 0);
@@ -226,7 +225,6 @@ int main()
             printf("There Was An Error sending second half\n");
             return -1;
         }
-
         printf("Authentication for second half was sent\n");
 
         // we change the CC algorithm to cubic and check for success
@@ -261,6 +259,7 @@ int main()
         int cmp = strcmp(exit,message);        
         if (cmp == 0)
         {
+            timesFileReceived++;
             break;
         }
 
@@ -275,9 +274,8 @@ int main()
     for (int i = 0; i < timesFileReceived; i++)
     {
         printf("This is the %dth time\n" , i + 1);
-
-        printf("The time it takes in microseconds to receive the first half of the file: %f\n", timeFirstHalf[i]);
-        printf("The time it takes in microseconds to receive the second half of the file: %f\n", timeSecondHalf[i]);
+        printf("The time it takes in seconds to receive the first half of the file: %f\n", timeFirstHalf[i]);
+        printf("The time it takes in seconds to receive the second half of the file: %f\n", timeSecondHalf[i]);
     }
     
 
@@ -292,11 +290,9 @@ int main()
         secondHalfAvg += timeSecondHalf[i];
     }
     
-    printf("The Average time for the first half in microseconds is: %f\n" , firstHalfAvg/timesFileReceived);
-    printf("The Average time for the seoncd half in microseconds is: %f\n" , secondHalfAvg/timesFileReceived);
-
+    printf("The Average time for the first half in seconds is: %f\n" , firstHalfAvg/timesFileReceived);
+    printf("The Average time for the seoncd half in seconds is: %f\n" , secondHalfAvg/timesFileReceived);
     printf("DONE\n");   
-
 
     // we close both sockets and end the program
     close(sock);
