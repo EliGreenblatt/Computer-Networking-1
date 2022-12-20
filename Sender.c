@@ -161,7 +161,6 @@ int main()
         char xor [16] = {0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0};
         char buf[16] = {0};
         int authen = recv(sock, buf, sizeof(xor) + 1, 0);
-
         if (authen < 0)
         {
             printf("Unsuccessfully recieved");

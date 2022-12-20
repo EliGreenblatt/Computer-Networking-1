@@ -120,7 +120,7 @@ int main()
     {
         // the file size of the chosen file , we decrease it by the amount of bytes
         // we received in amount until it reaches zero and then we carry on
-        int bufRend = 489576;
+        int bufRend = 504087;
 
         // we get current starting time
         gettimeofday(&firstHalfStartTime, NULL);
@@ -183,7 +183,7 @@ int main()
 
         // we reset the buffer renderer to the amount we expect to get in the second
         // half of the message
-        bufRend = 489576;
+        bufRend = 504088;
 
         // we get current starting time of the second half of the message
         gettimeofday(&secondHalfStartTime,NULL);
@@ -276,8 +276,8 @@ int main()
     {
         printf("This is the %dth time\n" , i + 1);
 
-        printf("The time it takes in milliseconds to receive the first half of the file: %f\n", timeFirstHalf[i]);
-        printf("The time it takes in milliseconds to receive the second half of the file: %f\n", timeSecondHalf[i]);
+        printf("The time it takes in microseconds to receive the first half of the file: %f\n", timeFirstHalf[i]);
+        printf("The time it takes in microseconds to receive the second half of the file: %f\n", timeSecondHalf[i]);
     }
     
 
@@ -292,8 +292,8 @@ int main()
         secondHalfAvg += timeSecondHalf[i];
     }
     
-    printf("The Average time for the first half in milliseconds is: %f\n" , firstHalfAvg/timesFileReceived);
-    printf("The Average time for the seoncd half in milliseconds is: %f\n" , secondHalfAvg/timesFileReceived);
+    printf("The Average time for the first half in microseconds is: %f\n" , firstHalfAvg/timesFileReceived);
+    printf("The Average time for the seoncd half in microseconds is: %f\n" , secondHalfAvg/timesFileReceived);
 
     printf("DONE\n");   
 
